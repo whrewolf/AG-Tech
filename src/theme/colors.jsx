@@ -5,6 +5,7 @@ const colors = {
     black: (opacity = 1) => `rgba(18, 18, 18, ${opacity})`, // #121212
     ivoryWhite: (opacity = 1) => `rgba(255, 248, 220, ${opacity})`, // #FFF8DC
     darkWood: (opacity = 1) => `rgba(101, 67, 33, ${opacity})`, // #654321
+    
 }
 
 export default colors;
