@@ -8,16 +8,20 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {colors, fontType} from '../../theme';
+import {useNavigation} from '@react-navigation/native';
+import {Edit2} from 'iconsax-react-native';
+
+const user = {
+  name: 'Zidan',
+  bio: 'Tukang Tatah',
+  location: 'Malang, Indonesia',
+  email: 'anzazidan@gmail.com',
+  phone: '085232441239',
+  profileImage: require('../../assets/images/profile.jpg'),
+};
 
 const Profile = () => {
-  const user = {
-    name: 'Zidan',
-    bio: 'Tukang Tatah',
-    location: 'Malang, Indonesia',
-    email: 'anzazidan@gmail.com',
-    phone: '085232441239',
-    profileImage: require('../../assets/images/profile.jpg'),
-  };
+  const navigation = useNavigation();
 
   return (
     <ScrollView style={styles.container}>
@@ -41,8 +45,15 @@ const Profile = () => {
           <Text style={styles.infoValue}>{user.phone}</Text>
         </View>
       </View>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('EditProfile', {user})}>
         <Text style={styles.buttonText}>Edit Profil</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => navigation.navigate('AddUkiran')}>
+        <Edit2 color={colors.ivoryWhite()} variant="Linear" size={20} />
       </TouchableOpacity>
     </ScrollView>
   );
@@ -114,6 +125,14 @@ const styles = StyleSheet.create({
   buttonText: {
     color: colors.black(),
     fontFamily: fontType['String1'],
+  },
+  addButton: {
+    backgroundColor: colors.darkWood(),
+    padding: 15,
+    position: 'absolute',
+    bottom: -320,
+    right: 0,
+    borderRadius: 50,
   },
 });
 

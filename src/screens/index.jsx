@@ -1,4 +1,7 @@
-import Homepage from './home';
+import Beranda from './home';
+import Profile from './profile';
 import UkiranDetail from './ukiranDetail';
+import EditProfile from './editProfile';
+import AddUkiran from './addUkiran';
 
-export {Homepage, UkiranDetail};
+export {Beranda, Profile, UkiranDetail, EditProfile, AddUkiran};

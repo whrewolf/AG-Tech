@@ -1,50 +1,59 @@
 import {ArrowUp, Profile2User} from 'iconsax-react-native';
-import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {colors, fontType} from '../theme';
+import {useNavigation} from '@react-navigation/native';
 
-const CarvingList = ({ carvings, selectedTab }) => {
+const listUkiran = ({ukirans, selectedTab}) => {
   return (
     <ScrollView>
-      {carvings.filter((carving) => carving.origin === selectedTab)
-        .map((carving, index) => (
-        <CarvingCard
-          key={index}
-          name={carving.name}
-          origin={carving.origin}
-          info={carving.info}
-          material={carving.material}
-          image={carving.image}
-        />
-      ))}
+      {ukirans
+        .filter(ukiran => ukiran.origin === selectedTab)
+        .map((ukiran, index) => (
+          <UkiranCard key={index} item={ukiran} />
+        ))}
     </ScrollView>
   );
 };
 
-const CarvingCard = ({name, info, image, material}) => {
+const UkiranCard = ({item}) => {
+  const navigation = useNavigation();
   return (
-    <View style={carvingStyles.card}>
-      <View style={carvingStyles.materialContainer}>
-        <View style={carvingStyles.material}>
-          <View style={carvingStyles.materialIcon}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate('ukiranDetail', {id: item.id})}>
+      <View style={styles.materialContainer}>
+        <View style={styles.material}>
+          <View style={styles.materialIcon}>
             <Profile2User size="24" color={colors.white()} />
           </View>
-          <Text style={carvingStyles.materialText}>{ material }</Text>
+          <Text style={styles.materialText}>{item.material}</Text>
         </View>
-        <View style={carvingStyles.iconContainer}>
-          <ArrowUp size="32" color="#FF8A65" style={carvingStyles.icon} />
+        <View style={styles.iconContainer}>
+          <ArrowUp size="32" color="#FF8A65" style={styles.icon} />
         </View>
       </View>
-      <Text style={carvingStyles.title}>Ukiran</Text>
-      <Text style={carvingStyles.title} numberOfLines={1} ellipsizeMode="tail">{name}</Text>
-      <Text style={carvingStyles.infoText} numberOfLines={1} ellipsizeMode="tail">{info}</Text>
-      <Image source={image} style={carvingStyles.image} />
-    </View>
+      <Text style={styles.title}>Ukiran</Text>
+      <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+        {item.name}
+      </Text>
+      <Text style={styles.infoText} numberOfLines={1} ellipsizeMode="tail">
+        {item.info}
+      </Text>
+      <Image source={item.image} style={styles.image} />
+    </TouchableOpacity>
   );
 };
 
-export default CarvingList;
+export default listUkiran;
 
-const carvingStyles = StyleSheet.create({
+const styles = StyleSheet.create({
   card: {
     marginBottom: 15,
     backgroundColor: colors.grey(),
@@ -76,19 +85,19 @@ const carvingStyles = StyleSheet.create({
   materialIcon: {
     padding: 3,
     borderRadius: 50,
-    backgroundColor: colors.yellow(),
+    backgroundColor: colors.gold(),
   },
   materialText: {
     fontSize: 16,
-    fontFamily: fontType['Light'],
+    fontFamily: fontType['String2'],
     marginTop: -5,
     marginLeft: 10,
-    color: colors.white(),
+    color: colors.ivoryWhitewhite(),
   },
   title: {
     fontSize: 38,
-    fontFamily: fontType['ExtraBold'],
-    color: colors.white(),
+    fontFamily: fontType['String1'],
+    color: colors.ivoryWhite(),
     marginVertical: -10,
     marginHorizontal: 10,
   },
@@ -100,47 +109,16 @@ const carvingStyles = StyleSheet.create({
   infoText: {
     fontSize: 18,
     color: colors.white(),
-    fontFamily: fontType['Light'],
+    fontFamily: fontType['String2'],
     marginVertical: 15,
     marginHorizontal: 10,
   },
   iconContainer: {
     padding: 5,
     borderRadius: 10,
-    backgroundColor: colors.white(),
+    backgroundColor: colors.ivoryWhite(),
   },
   icon: {
     transform: [{rotate: '45deg'}],
   },
 });
-
-const carvings = [
-  {
-    name: 'Ukiran Jepara',
-    origin: 'Jawa Tengah',
-    info: 'Ukiran khas Jepara terkenal dengan motif floral dan detail halus yang sering digunakan pada furnitur dan dekorasi rumah.',
-    material: 'Kayu Jati',
-    image: require('./assets/images/ukiran-jepara.jpg'),
-  },
-  {
-    name: 'Ukiran Bali',
-    origin: 'Bali',
-    info: 'Ukiran Bali memiliki gaya unik dengan tema dewa, makhluk mitologi, dan ornamen khas budaya Hindu Bali.',
-    material: 'Kayu Mahoni',
-    image: require('./assets/images/ukiran-bali.jpg'),
-  },
-  {
-    name: 'Ukiran Dayak',
-    origin: 'Kalimantan',
-    info: 'Ukiran Dayak menampilkan simbol-simbol spiritual dengan bentuk abstrak dan geometris.',
-    material: 'Kayu Ulin',
-    image: require('./assets/images/ukiran-dayak.jpg'),
-  },
-  {
-    name: 'Ukiran Toraja',
-    origin: 'Sulawesi Selatan',
-    info: 'Ukiran Toraja sering ditemukan pada rumah adat Tongkonan dengan motif kerbau dan pola khas lainnya.',
-    material: 'Kayu Meranti',
-    image: require('./assets/images/ukiran-toraja.jpg'),
-  }
-];

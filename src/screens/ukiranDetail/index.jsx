@@ -9,34 +9,39 @@ import {
 } from 'react-native';
 import {ArrowLeft2} from 'iconsax-react-native';
 import {colors, fontType} from '../../theme';
+import {useNavigation} from '@react-navigation/native';
 
-// Import gambar ukiran
 const ukiranList = [
   {
+    id: 1,
     name: 'Ukiran Bali',
     image: require('../../assets/images/ukiran-bali.jpeg'),
     origin: 'Bali',
     info: 'Ukiran Bali memiliki motif khas dewa-dewi dan bentuk alami seperti bunga dan daun, sering digunakan dalam pura dan bangunan adat.',
   },
   {
+    id: 2,
     name: 'Ukiran Dayak',
     image: require('../../assets/images/ukiran-dayak.jpg'),
     origin: 'Kalimantan',
     info: 'Ukiran Dayak sarat akan makna spiritual, dengan bentuk simbolis yang menggambarkan roh leluhur dan alam sekitar.',
   },
   {
+    id: 3,
     name: 'Ukiran Jepara',
     image: require('../../assets/images/ukiran-jepara.jpeg'),
     origin: 'Jawa Tengah',
     info: 'Ukiran Jepara terkenal halus dan kompleks, sering digunakan dalam furniture, berasal dari tradisi ukir sejak zaman R.A. Kartini.',
   },
   {
+    id: 4,
     name: 'Ukiran Melayu',
     image: require('../../assets/images/ukiran-melayu.jpeg'),
     origin: 'Sumatera',
     info: 'Ukiran Melayu menampilkan motif geometris dan floral, banyak ditemukan pada rumah adat dan kerajinan tangan.',
   },
   {
+    id: 5,
     name: 'Ukiran Toraja',
     image: require('../../assets/images/ukiran-toraja.jpg'),
     origin: 'Sulawesi Selatan',
@@ -44,27 +49,28 @@ const ukiranList = [
   },
 ];
 
-const UkiranDetail = ({navigation}) => {
+const UkiranDetail = ({route}) => {
+  const {id} = route.params;
+  const selected = ukiranList.find(item => item.id === id);
+  const navigation = useNavigation();
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ArrowLeft2 style={styles.icon} size="20" color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.text}>Kerajinan Ukir</Text>
+        <Text style={styles.text}>Detail</Text>
       </View>
-
-      {ukiranList.map((ukir, index) => (
-        <View style={styles.card} key={index}>
-          <Image style={styles.gambar} source={ukir.image} />
-          <View style={styles.infoContainer}>
-            <Text style={styles.title}>{ukir.name}</Text>
-            <Text style={styles.location}>Asal: {ukir.origin}</Text>
-            <Text style={styles.infoTitle}>Deskripsi</Text>
-            <Text style={styles.info}>{ukir.info}</Text>
-          </View>
+      <View style={styles.card}>
+        <Image style={styles.gambar} source={selected.image} />
+        <View style={styles.infoContainer}>
+          <Text style={styles.title}>{selected.name}</Text>
+          <Text style={styles.location}>Asal: {selected.origin}</Text>
+          <Text style={styles.infoTitle}>Deskripsi</Text>
+          <Text style={styles.info}>{selected.info}</Text>
         </View>
-      ))}
+      </View>
     </ScrollView>
   );
 };

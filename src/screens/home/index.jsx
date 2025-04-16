@@ -10,21 +10,18 @@ import {
 } from 'react-native';
 import {colors} from '../../theme';
 import React, {useState} from 'react';
-import {
-  Home,
-  SearchNormal,
-  ShoppingCart,
-  UserOctagon,
-} from 'iconsax-react-native';
+import {SearchNormal, ShoppingCart, UserOctagon} from 'iconsax-react-native';
 
-export default function Homepage() {
+export default function Homepage({navigation}) {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.icons} />
+        <TouchableOpacity style={styles.icons}>
+          {/* Tambahkan ikon jika perlu */}
+        </TouchableOpacity>
         <Text style={styles.title}>UKIRAN NUSANTARA</Text>
         <TouchableOpacity style={styles.icons}>
           <Text style={styles.notif}>3</Text>
@@ -48,29 +45,16 @@ export default function Homepage() {
       {/* Product Listings */}
       <ScrollView contentContainerStyle={styles.productContainer}>
         {products.map((product, index) => (
-          <View key={index} style={styles.productCard}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('ukiranDetail', {id: index + 1})
+            }>
             <Image source={product.image} style={styles.productImage} />
             <Text style={styles.productTitle}>{product.title}</Text>
             <Text style={styles.productPrice}>{product.price}</Text>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
-
-      {/* Footer Navigation */}
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.footerButton}>
-          <Home size={32} color="#fff" />
-          <Text style={styles.footerText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerButton}>
-          <ShoppingCart size={32} color="#fff" />
-          <Text style={styles.footerText}>Keranjang</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerButton}>
-          <UserOctagon size={32} color="#fff" />
-          <Text style={styles.footerText}>Akun</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -80,16 +64,22 @@ const products = [
     image: require('../../assets/images/ukiran-jepara.jpeg'),
     title: 'Ukiran Kayu Jepara',
     price: 'Rp 1.200.000',
+    description:
+      'Ukiran khas Jepara yang terkenal dengan detail halus dan motif tradisional.',
   },
   {
     image: require('../../assets/images/ukiran-bali.jpeg'),
     title: 'Patung Garuda Kencana',
     price: 'Rp 2.500.000',
+    description:
+      'Patung Garuda bergaya Bali yang melambangkan kekuatan dan kejayaan.',
   },
   {
     image: require('../../assets/images/ukiran-toraja.jpg'),
     title: 'Pintu Ukir Kaligrafi',
     price: 'Rp 3.800.000',
+    description:
+      'Pintu ukiran khas Toraja dengan sentuhan kaligrafi yang memukau.',
   },
 ];
 
@@ -169,18 +159,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: colors.gold(),
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: colors.darkWood(),
-    paddingVertical: 10,
-  },
-  footerButton: {
-    alignItems: 'center',
-  },
-  footerText: {
-    fontSize: 12,
-    color: colors.ivoryWhite(),
   },
 });
