@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,11 +6,13 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {colors, fontType} from '../../theme';
-import {useNavigation} from '@react-navigation/native';
-import {Edit2} from 'iconsax-react-native';
-import * as Animatable from 'react-native-animatable'; // Import animasi
+import {useNavigation, useIsFocused} from '@react-navigation/native';
+import {Edit2, Trash} from 'iconsax-react-native';
+import * as Animatable from 'react-native-animatable';
+import axios from 'axios';
 
 const user = {
   name: 'Zidan',
@@ -23,6 +25,40 @@ const user = {
 
 const Profile = () => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+  const [articles, setArticles] = useState([]);
+
+  const fetchArticles = async () => {
+    try {
+      const res = await axios.get('https://6839e87f6561b8d882b218bc.mockapi.io/api/artikel');
+      setArticles(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async id => {
+    Alert.alert('Konfirmasi', 'Yakin ingin menghapus?', [
+      {text: 'Batal', style: 'cancel'},
+      {
+        text: 'Hapus',
+        onPress: async () => {
+          try {
+            await axios.delete(`https://6839e87f6561b8d882b218bc.mockapi.io/api/artikel/${id}`);
+            fetchArticles();
+          } catch (err) {
+            console.error(err);
+          }
+        },
+      },
+    ]);
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      fetchArticles();
+    }
+  }, [isFocused]);
 
   return (
     <ScrollView style={styles.container}>
@@ -72,84 +108,84 @@ const Profile = () => {
           <Edit2 color={colors.ivoryWhite()} variant="Linear" size={20} />
         </TouchableOpacity>
       </Animatable.View>
+
+      <Text style={styles.articleHeader}>Daftar Ukiran</Text>
+      {articles.map(item => (
+        <Animatable.View
+          key={item.id}
+          animation="fadeInUp"
+          delay={100}
+          style={styles.articleCard}>
+          <Image source={{uri: item.image}} style={styles.articleImage} />
+          <View style={{flex: 1}}>
+            <Text style={styles.articleTitle}>{item.name}</Text>
+            <Text style={styles.articleOrigin}>{item.origin}</Text>
+            <Text style={styles.articleDesc}>{item.description}</Text>
+            <View style={styles.actionRow}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('AddUkiran', {editData: item})}>
+                <Edit2 size={20} color={colors.ivoryWhite()} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDelete(item.id)}>
+                <Trash size={20} color="red" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Animatable.View>
+      ))}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.black(),
-    padding: 16,
-  },
-  header: {
-    marginTop: 50,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
+  container: {flex: 1, backgroundColor: colors.black(), padding: 16},
+  header: {marginTop: 50, alignItems: 'center', marginBottom: 20},
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: colors.ivoryWhite(),
-    marginBottom: 10,
+    width: 100, height: 100, borderRadius: 50,
+    borderWidth: 2, borderColor: colors.ivoryWhite(), marginBottom: 10,
   },
-  name: {
-    fontSize: 24,
-    color: colors.ivoryWhite(),
-    fontFamily: fontType['RoadRage'],
-  },
+  name: {fontSize: 24, color: colors.ivoryWhite(), fontFamily: fontType['RoadRage']},
   bio: {
-    fontSize: 16,
-    fontFamily: fontType['String1'],
-    color: colors.darkWood(),
-    textAlign: 'center',
-    marginBottom: 10,
+    fontSize: 16, fontFamily: fontType['String1'],
+    color: colors.darkWood(), textAlign: 'center', marginBottom: 10,
   },
   infoContainer: {
     backgroundColor: colors.darkWood(),
-    borderRadius: 10,
-    padding: 16,
-    marginBottom: 20,
+    borderRadius: 10, padding: 16, marginBottom: 20,
   },
   infoTitle: {
-    fontSize: 18,
-    fontFamily: fontType['String2'],
-    marginBottom: 10,
-    color: colors.ivoryWhite(),
+    fontSize: 18, fontFamily: fontType['String2'],
+    marginBottom: 10, color: colors.ivoryWhite(),
   },
   infoItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
+    flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8,
   },
-  infoLabel: {
-    fontWeight: 'String2',
-    fontFamily: fontType['String3'],
-    color: colors.ivoryWhite(),
-  },
-  infoValue: {
-    fontFamily: fontType['String3'],
-    color: colors.ivoryWhite(),
-  },
+  infoLabel: {fontFamily: fontType['String3'], color: colors.ivoryWhite()},
+  infoValue: {fontFamily: fontType['String3'], color: colors.ivoryWhite()},
   button: {
     backgroundColor: colors.ivoryWhite(),
-    borderRadius: 5,
-    paddingVertical: 10,
-    alignItems: 'center',
+    borderRadius: 5, paddingVertical: 10, alignItems: 'center',
   },
-  buttonText: {
-    color: colors.black(),
-    fontFamily: fontType['String1'],
-  },
+  buttonText: {color: colors.black(), fontFamily: fontType['String1']},
   addButton: {
+    backgroundColor: colors.darkWood(), padding: 15,
+    position: 'absolute', bottom: -320, right: 0, borderRadius: 50,
+  },
+  articleHeader: {
+    marginTop: 30, fontSize: 20, fontFamily: fontType['String2'],
+    color: colors.ivoryWhite(), marginBottom: 10,
+  },
+  articleCard: {
+    flexDirection: 'row', gap: 10,
     backgroundColor: colors.darkWood(),
-    padding: 15,
-    position: 'absolute',
-    bottom: -320,
-    right: 0,
-    borderRadius: 50,
+    padding: 10, borderRadius: 8, marginBottom: 10,
+  },
+  articleImage: {width: 80, height: 80, borderRadius: 8},
+  articleTitle: {color: colors.ivoryWhite(), fontFamily: fontType['String2']},
+  articleOrigin: {color: colors.ivoryWhite(), fontSize: 12},
+  articleDesc: {color: colors.ivoryWhite(), fontSize: 11},
+  actionRow: {
+    marginTop: 10, flexDirection: 'row', gap: 16,
   },
 });
 

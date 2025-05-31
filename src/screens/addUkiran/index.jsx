@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -9,26 +9,53 @@ import {
 } from 'react-native';
 import {ArrowLeft2} from 'iconsax-react-native';
 import {colors, fontType} from '../../theme';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {TextInput} from 'react-native-gesture-handler';
+import axios from 'axios';
 
 const AddUkiran = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const editData = route.params?.editData;
+
   const [form, setForm] = useState({
     name: '',
     origin: '',
     description: '',
     material: '',
     year: '',
-    image: null,
+    image: '',
   });
+
+  useEffect(() => {
+    if (editData) {
+      setForm(editData);
+    }
+  }, [editData]);
 
   const handleChange = (field, value) => {
     setForm({...form, [field]: value});
   };
 
-  const handleSubmit = () => {
-    Alert.alert('Ukiran Disimpan', JSON.stringify(form, null, 2));
+  const handleSubmit = async () => {
+    try {
+      if (editData) {
+        await axios.put(
+          `https://6839e87f6561b8d882b218bc.mockapi.io/api/artikel/${editData.id}`,
+          form
+        );
+        Alert.alert('Sukses', 'Ukiran berhasil diperbarui');
+      } else {
+        await axios.post(
+          'https://6839e87f6561b8d882b218bc.mockapi.io/api/artikel',
+          form
+        );
+        Alert.alert('Sukses', 'Ukiran berhasil ditambahkan');
+      }
+      navigation.goBack();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -40,16 +67,18 @@ const AddUkiran = () => {
         <Text style={styles.headerTitle}>Tambah Ukiran</Text>
       </View>
       <View style={styles.card}>
-        <Text style={styles.label}>Gambar</Text>
-        <TouchableOpacity style={styles.imagePicker}>
-          <Text style={styles.imagePickerText}>Pilih Gambar</Text>
-        </TouchableOpacity>
+        <Text style={styles.label}>Gambar (URL)</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="https://..."
+          value={form.image}
+          onChangeText={text => handleChange('image', text)}
+        />
 
         <Text style={styles.label}>Nama Ukiran</Text>
         <TextInput
           style={styles.input}
           placeholder="Nama ukiran"
-          placeholderTextColor={colors.darkWood()}
           value={form.name}
           onChangeText={text => handleChange('name', text)}
         />
@@ -58,7 +87,6 @@ const AddUkiran = () => {
         <TextInput
           style={styles.input}
           placeholder="Contoh: Jepara"
-          placeholderTextColor={colors.darkWood()}
           value={form.origin}
           onChangeText={text => handleChange('origin', text)}
         />
@@ -67,7 +95,6 @@ const AddUkiran = () => {
         <TextInput
           style={[styles.input, {height: 100}]}
           placeholder="Deskripsi ukiran"
-          placeholderTextColor={colors.darkWood()}
           multiline
           value={form.description}
           onChangeText={text => handleChange('description', text)}
@@ -77,7 +104,6 @@ const AddUkiran = () => {
         <TextInput
           style={styles.input}
           placeholder="Kayu Jati, Mahoni, dll."
-          placeholderTextColor={colors.darkWood()}
           value={form.material}
           onChangeText={text => handleChange('material', text)}
         />
@@ -86,14 +112,13 @@ const AddUkiran = () => {
         <TextInput
           style={styles.input}
           placeholder="Contoh: 2023"
-          placeholderTextColor={colors.darkWood()}
           keyboardType="numeric"
           value={form.year}
           onChangeText={text => handleChange('year', text)}
         />
 
         <TouchableOpacity style={styles.buttonContainer} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Simpan</Text>
+          <Text style={styles.buttonText}>{editData ? 'Update' : 'Simpan'}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -101,67 +126,34 @@ const AddUkiran = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.black(),
-    padding: 16,
-  },
+  container: {flex: 1, backgroundColor: colors.black(), padding: 16},
   header: {
-    marginTop: 50,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
+    marginTop: 50, flexDirection: 'row', alignItems: 'center', marginBottom: 20,
   },
   headerTitle: {
-    color: colors.ivoryWhite(),
-    fontSize: 20,
-    fontFamily: fontType['RoadRage'],
-    marginLeft: 10,
+    color: colors.ivoryWhite(), fontSize: 20,
+    fontFamily: fontType['RoadRage'], marginLeft: 10,
   },
   card: {
     backgroundColor: colors.darkWood(),
-    borderRadius: 10,
-    padding: 16,
+    borderRadius: 10, padding: 16,
   },
   label: {
     color: colors.ivoryWhite(),
     fontFamily: fontType['String2'],
-    marginTop: 15,
-    marginBottom: 5,
-  },
-  imagePicker: {
-    width: 150,
-    height: 150,
-    backgroundColor: colors.ivoryWhite(),
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 10,
-    alignSelf: 'center',
-    overflow: 'hidden',
-  },
-  imagePickerText: {
-    color: colors.darkWood(),
-    fontFamily: fontType['String3'],
+    marginTop: 15, marginBottom: 5,
   },
   input: {
-    borderWidth: 1,
-    borderColor: colors.ivoryWhite(),
-    borderRadius: 8,
-    padding: 10,
-    color: colors.ivoryWhite(),
-    fontFamily: fontType['String3'],
+    borderWidth: 1, borderColor: colors.ivoryWhite(),
+    borderRadius: 8, padding: 10,
+    color: colors.ivoryWhite(), fontFamily: fontType['String3'],
   },
   buttonContainer: {
-    marginTop: 30,
-    backgroundColor: colors.ivoryWhite(),
-    borderRadius: 5,
-    paddingVertical: 10,
-    alignItems: 'center',
+    marginTop: 30, backgroundColor: colors.ivoryWhite(),
+    borderRadius: 5, paddingVertical: 10, alignItems: 'center',
   },
   buttonText: {
-    color: colors.black(),
-    fontFamily: fontType['String1'],
+    color: colors.black(), fontFamily: fontType['String1'],
   },
 });
 
