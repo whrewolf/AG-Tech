@@ -21,6 +21,8 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 
+import { displayNotification } from '../../utils/notification'; 
+
 const AddUkiran = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -48,14 +50,16 @@ const AddUkiran = () => {
   const handleSubmit = async () => {
     try {
       if (editData) {
-        // update document by id (editData.id)
+        
         const docRef = doc(db, 'ukiran', editData.id);
         await updateDoc(docRef, form);
         Alert.alert('Sukses', 'Ukiran berhasil diperbarui');
+        await displayNotification('Sukses', 'Ukiran berhasil diperbarui'); 
       } else {
-        // add new document to 'ukiran' collection
+       
         await addDoc(collection(db, 'ukiran'), form);
         Alert.alert('Sukses', 'Ukiran berhasil ditambahkan');
+        await displayNotification('Sukses', 'Ukiran berhasil ditambahkan'); 
       }
       navigation.goBack();
     } catch (err) {
