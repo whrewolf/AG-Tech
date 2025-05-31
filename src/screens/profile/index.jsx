@@ -12,7 +12,14 @@ import {colors, fontType} from '../../theme';
 import {useNavigation, useIsFocused} from '@react-navigation/native';
 import {Edit2, Trash} from 'iconsax-react-native';
 import * as Animatable from 'react-native-animatable';
-import axios from 'axios';
+
+import { db } from '../../firebase/firebaseConfig';
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+} from 'firebase/firestore';
 
 const user = {
   name: 'Zidan',
@@ -30,21 +37,25 @@ const Profile = () => {
 
   const fetchArticles = async () => {
     try {
-      const res = await axios.get('https://6839e87f6561b8d882b218bc.mockapi.io/api/artikel');
-      setArticles(res.data);
+      const querySnapshot = await getDocs(collection(db, 'ukiran'));
+      const list = [];
+      querySnapshot.forEach(docSnap => {
+        list.push({id: docSnap.id, ...docSnap.data()});
+      });
+      setArticles(list);
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleDelete = async id => {
+  const handleDelete = id => {
     Alert.alert('Konfirmasi', 'Yakin ingin menghapus?', [
       {text: 'Batal', style: 'cancel'},
       {
         text: 'Hapus',
         onPress: async () => {
           try {
-            await axios.delete(`https://6839e87f6561b8d882b218bc.mockapi.io/api/artikel/${id}`);
+            await deleteDoc(doc(db, 'ukiran', id));
             fetchArticles();
           } catch (err) {
             console.error(err);
@@ -120,14 +131,19 @@ const Profile = () => {
           <View style={{flex: 1}}>
             <Text style={styles.articleTitle}>{item.name}</Text>
             <Text style={styles.articleOrigin}>{item.origin}</Text>
-            <Text style={styles.articleDesc}>{item.description}</Text>
-            <View style={styles.actionRow}>
+            <Text style={styles.articleDesc} numberOfLines={2}>
+              {item.description}
+            </Text>
+            <View style={styles.actionButtons}>
               <TouchableOpacity
-                onPress={() => navigation.navigate('AddUkiran', {editData: item})}>
-                <Edit2 size={20} color={colors.ivoryWhite()} />
+                onPress={() => navigation.navigate('AddUkiran', {editData: item})}
+                style={styles.editButton}>
+                <Edit2 color={colors.ivoryWhite()} size={18} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDelete(item.id)}>
-                <Trash size={20} color="red" />
+              <TouchableOpacity
+                onPress={() => handleDelete(item.id)}
+                style={styles.deleteButton}>
+                <Trash color={colors.ivoryWhite()} size={18} />
               </TouchableOpacity>
             </View>
           </View>

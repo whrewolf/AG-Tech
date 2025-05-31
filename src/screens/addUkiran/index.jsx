@@ -11,7 +11,15 @@ import {ArrowLeft2} from 'iconsax-react-native';
 import {colors, fontType} from '../../theme';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {TextInput} from 'react-native-gesture-handler';
-import axios from 'axios';
+
+import { db } from '../../firebase/firebaseConfig' ;
+import {
+  doc,
+  setDoc,
+  addDoc,
+  collection,
+  updateDoc,
+} from 'firebase/firestore';
 
 const AddUkiran = () => {
   const navigation = useNavigation();
@@ -40,21 +48,19 @@ const AddUkiran = () => {
   const handleSubmit = async () => {
     try {
       if (editData) {
-        await axios.put(
-          `https://6839e87f6561b8d882b218bc.mockapi.io/api/artikel/${editData.id}`,
-          form
-        );
+        // update document by id (editData.id)
+        const docRef = doc(db, 'ukiran', editData.id);
+        await updateDoc(docRef, form);
         Alert.alert('Sukses', 'Ukiran berhasil diperbarui');
       } else {
-        await axios.post(
-          'https://6839e87f6561b8d882b218bc.mockapi.io/api/artikel',
-          form
-        );
+        // add new document to 'ukiran' collection
+        await addDoc(collection(db, 'ukiran'), form);
         Alert.alert('Sukses', 'Ukiran berhasil ditambahkan');
       }
       navigation.goBack();
     } catch (err) {
       console.error(err);
+      Alert.alert('Error', 'Terjadi kesalahan saat menyimpan data');
     }
   };
 
@@ -64,7 +70,7 @@ const AddUkiran = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ArrowLeft2 size="24" color={colors.ivoryWhite()} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Tambah Ukiran</Text>
+        <Text style={styles.headerTitle}>{editData ? 'Edit Ukiran' : 'Tambah Ukiran'}</Text>
       </View>
       <View style={styles.card}>
         <Text style={styles.label}>Gambar (URL)</Text>
