@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import {colors} from '../../theme';
 import React, {useState} from 'react';
-import {SearchNormal, ShoppingCart, UserOctagon} from 'iconsax-react-native';
+import {SearchNormal} from 'iconsax-react-native';
+import * as Animatable from 'react-native-animatable';
 
 export default function Homepage({navigation}) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,7 +23,10 @@ export default function Homepage({navigation}) {
         <TouchableOpacity style={styles.icons}>
           {/* Tambahkan ikon jika perlu */}
         </TouchableOpacity>
-        <Text style={styles.title}>UKIRAN NUSANTARA</Text>
+        <Animatable.View animation="fadeInDown" duration={1000}>
+  <Text style={styles.title}>UKIRAN NUSANTARA</Text>
+</Animatable.View>
+
         <TouchableOpacity style={styles.icons}>
           <Text style={styles.notif}>3</Text>
         </TouchableOpacity>
@@ -45,14 +49,20 @@ export default function Homepage({navigation}) {
       {/* Product Listings */}
       <ScrollView contentContainerStyle={styles.productContainer}>
         {products.map((product, index) => (
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('ukiranDetail', {id: index + 1})
-            }>
-            <Image source={product.image} style={styles.productImage} />
-            <Text style={styles.productTitle}>{product.title}</Text>
-            <Text style={styles.productPrice}>{product.price}</Text>
-          </TouchableOpacity>
+          <Animatable.View
+            key={index}
+            animation="fadeInUp"
+            delay={index * 300}
+            duration={800}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('ukiranDetail', {id: index + 1})
+              }>
+              <Image source={product.image} style={styles.productImage} />
+              <Text style={styles.productTitle}>{product.title}</Text>
+              <Text style={styles.productPrice}>{product.price}</Text>
+            </TouchableOpacity>
+          </Animatable.View>
         ))}
       </ScrollView>
     </View>

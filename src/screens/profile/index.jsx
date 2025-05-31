@@ -10,6 +10,7 @@ import {
 import {colors, fontType} from '../../theme';
 import {useNavigation} from '@react-navigation/native';
 import {Edit2} from 'iconsax-react-native';
+import * as Animatable from 'react-native-animatable'; // Import animasi
 
 const user = {
   name: 'Zidan',
@@ -25,12 +26,22 @@ const Profile = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Image style={styles.profileImage} source={user.profileImage} />
-        <Text style={styles.name}>{user.name}</Text>
-        <Text style={styles.bio}>{user.bio}</Text>
-      </View>
-      <View style={styles.infoContainer}>
+      <Animatable.View animation="fadeInDown" duration={800} style={styles.header}>
+        <Animatable.Image
+          animation="bounceIn"
+          duration={1500}
+          style={styles.profileImage}
+          source={user.profileImage}
+        />
+        <Animatable.Text animation="fadeIn" delay={300} style={styles.name}>
+          {user.name}
+        </Animatable.Text>
+        <Animatable.Text animation="fadeIn" delay={500} style={styles.bio}>
+          {user.bio}
+        </Animatable.Text>
+      </Animatable.View>
+
+      <Animatable.View animation="fadeInUp" delay={700} style={styles.infoContainer}>
         <Text style={styles.infoTitle}>Informasi Kontak</Text>
         <View style={styles.infoItem}>
           <Text style={styles.infoLabel}>Lokasi:</Text>
@@ -44,17 +55,23 @@ const Profile = () => {
           <Text style={styles.infoLabel}>Telepon:</Text>
           <Text style={styles.infoValue}>{user.phone}</Text>
         </View>
-      </View>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('EditProfile', {user})}>
-        <Text style={styles.buttonText}>Edit Profil</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate('AddUkiran')}>
-        <Edit2 color={colors.ivoryWhite()} variant="Linear" size={20} />
-      </TouchableOpacity>
+      </Animatable.View>
+
+      <Animatable.View animation="zoomIn" delay={900}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('EditProfile', {user})}>
+          <Text style={styles.buttonText}>Edit Profil</Text>
+        </TouchableOpacity>
+      </Animatable.View>
+
+      <Animatable.View animation="bounceInUp" delay={1000}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => navigation.navigate('AddUkiran')}>
+          <Edit2 color={colors.ivoryWhite()} variant="Linear" size={20} />
+        </TouchableOpacity>
+      </Animatable.View>
     </ScrollView>
   );
 };
